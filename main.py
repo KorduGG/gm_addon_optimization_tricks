@@ -10,6 +10,7 @@ from utils.formatting import format_size
 from unused_files.modelformats import unused_model_formats
 from unused_files.content import unused_content
 from unused_files.remove_game_files import remove_game_files
+from unused_files.find_duplicates import find_duplicates
 from material_compression.resize_and_compress import resize_and_compress
 from material_compression.resize_png import clamp_pngs
 from material_compression.remove_mipmaps import remove_mipmaps
@@ -179,6 +180,8 @@ class MainWindow(QtWidgets.QMainWindow):
                    tooltip="Remove files that are already provided by base GMod.\nCan reduce size significantly for addons that include EP1/EP2/CSS content.")
         add_button(cleanup_grid, 3, "Find and copy content used by .bsp", self.on_find_map_content,
                    tooltip="Extract all content referenced by a BSP map file and copy it to a new folder for easy map packing.")
+        add_button(cleanup_grid, 4, "Find duplicate files (scan/remove)", self.on_find_duplicates, recommended=True,
+                   tooltip="Scan for duplicate files and optionally remove them. Keeps the first occurrence of each duplicate.")
         cleanup_group.setLayout(cleanup_grid)
         actions_layout.addWidget(cleanup_group)
 
@@ -569,6 +572,17 @@ class MainWindow(QtWidgets.QMainWindow):
             return resize_single_color_images(folder, progress_callback=self.worker.progress.emit)
         
         self.start_task("Resize single-color images", task, determinate=True)
+
+    def on_find_duplicates(self):
+        folder = self.ensure_folder()
+        if not folder:
+            return
+        remove = self.ask_yes_no("Remove duplicates?", "Do you want to remove the found duplicate files? The first occurrence of each duplicate will be kept.")
+
+        def task():
+            return find_duplicates(folder, remove, progress_callback=self.worker.progress.emit)
+
+        self.start_task("Find duplicate files", task, determinate=True)
 
 
 def main():
