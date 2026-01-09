@@ -562,7 +562,7 @@ def main():
     # Set AppUserModelID for Windows taskbar icon
     if sys.platform == 'win32':
         import ctypes
-        myappid = 'cfcservers.gmaddonoptimization.tools.1.0'
+        myappid = 'redox.gmaddonoptimization.tools.1.0'
         ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
     
     signal.signal(signal.SIGINT, signal.SIG_DFL)
