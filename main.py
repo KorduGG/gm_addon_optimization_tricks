@@ -428,12 +428,13 @@ class MainWindow(QtWidgets.QMainWindow):
         if not folder:
             return
         remove = self.ask_yes_no("Remove files?", "Do you want to remove the found files? This will remove files that are already provided by the game.")
+        remove_different_content = self.ask_yes_no("Remove different content?", "Also remove files that differ in size or content from the game files? This is safer but may leave some files behind.")
         gamefolder = self.ask_directory("Absolute path to game folder (eg C:/Program Files (x86)/Steam/steamapps/common/GarrysMod)")
         if not gamefolder or not os.path.exists(os.path.join(gamefolder, "gmod.exe")):
             QtWidgets.QMessageBox.warning(self, "Invalid game folder", "The selected folder doesn't contain gmod.exe")
             return
 
-        self.start_task("Remove files already in game", remove_game_files, folder, gamefolder, remove)
+        self.start_task("Remove files already in game", remove_game_files, folder, gamefolder, remove, remove_different_content)
 
     def on_clamp_vtf(self):
         folder = self.ensure_folder()

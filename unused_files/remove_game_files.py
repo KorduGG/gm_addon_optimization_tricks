@@ -2,7 +2,7 @@ import os
 import xxhash
 from utils.vpk import get_vpk_files
 
-def remove_game_files(folder, gamefolder, remove=True):
+def remove_game_files(folder, gamefolder, remove=True, remove_different_content=False):
     """
     Remove files that exist in the game's VPK files from the addon folder.
 
@@ -36,29 +36,30 @@ def remove_game_files(folder, gamefolder, remove=True):
 
             # Check if this file exists in any VPK
             if rel_path in vpk_files:
-                vpk = vpk_files[rel_path]
-                vpk_content = vpk.read_entry(rel_path)
-                vpk_content_len = len(vpk_content)
+                if not remove_different_content:
+                    vpk = vpk_files[rel_path]
+                    vpk_content = vpk.read_entry(rel_path)
+                    vpk_content_len = len(vpk_content)
 
-                addon_file_size = os.path.getsize(file_path)
-                if vpk_content_len != addon_file_size:
-                    print(f"✗ File size mismatch {addon_file_size}/{vpk_content_len} for {rel_path}, skipping removal.")
-                    continue
+                    addon_file_size = os.path.getsize(file_path)
+                    if vpk_content_len != addon_file_size:
+                        print(f"✗ File size mismatch {addon_file_size}/{vpk_content_len} for {rel_path}, skipping removal.")
+                        continue
 
-                # Comapre xxhashes of both files to ensure they are identical
-                hasher = xxhash.xxh64()
-                with open(file_path, "rb") as f:
-                    while True:
-                        data = f.read(65536)
-                        if not data:
-                            break
-                        hasher.update(data)
+                    # Comapre xxhashes of both files to ensure they are identical
+                    hasher = xxhash.xxh64()
+                    with open(file_path, "rb") as f:
+                        while True:
+                            data = f.read(65536)
+                            if not data:
+                                break
+                            hasher.update(data)
 
-                addon_file_hash = hasher.digest()
-                vpk_file_hash = xxhash.xxh64(vpk_content).digest()
-                if addon_file_hash != vpk_file_hash:
-                    print(f"✗ File hash mismatch for {rel_path}, skipping removal.")
-                    continue
+                    addon_file_hash = hasher.digest()
+                    vpk_file_hash = xxhash.xxh64(vpk_content).digest()
+                    if addon_file_hash != vpk_file_hash:
+                        print(f"✗ File hash mismatch for {rel_path}, skipping removal.")
+                        continue
 
                 file_size = os.path.getsize(file_path)
                 removed_size += file_size
