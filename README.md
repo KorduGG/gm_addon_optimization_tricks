@@ -56,7 +56,7 @@ If you prefer to run it manually:
    ```
 
 ## Screenshot
-<img width="982" height="752" alt="image" src="https://github.com/user-attachments/assets/d068b89f-aaf2-4ff6-bc1b-e783c99a47d4" />
+<img width="982" height="752" alt="image" src="https://github.com/user-attachments/assets/93e472cd-0d6d-439c-b941-504d383476f4" />
 
 ## Credits
 - Originally made in collaboration with [@CFC-Servers](https://github.com/CFC-Servers)
