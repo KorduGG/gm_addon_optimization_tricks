@@ -160,3 +160,4 @@ def trim_empty_audio(folder, silence_thresh=-55, min_silence_len=50, fade_durati
     
     print(f"Time taken: {round(time.time() - start_time, 2)} seconds")
     print("="*60)
+    return old_size - new_size, success_count

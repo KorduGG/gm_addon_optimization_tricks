@@ -32,15 +32,15 @@ def wav_to_ogg(folder, progress_callback=None):
                     progress_callback(processed, total_wavs)
                 
                 wav_info = WavInfoReader(filepath)
-                if wav_info.cues == None:
+                
+                # Skip files WITH cue markers (they need cues preserved)
+                if wav_info.cues is not None and len(wav_info.cues.cues) > 0:
+                    print("File", filepath, "contains cues, skipping.")
                     continue
 
-                if len(wav_info.cues.cues) > 0:
-                    print("File", filepath, "contains cues skipping.")
-                    continue
-
-                if wav_info.smpl != None and len(wav_info.smpl.sample_loops) > 0:
-                    print("File", filepath, "contains loops skipping.")
+                # Skip files WITH loop points (they need loops preserved)
+                if wav_info.smpl is not None and len(wav_info.smpl.sample_loops) > 0:
+                    print("File", filepath, "contains loops, skipping.")
                     continue
 
                 old_size += os.path.getsize(filepath)
@@ -85,6 +85,8 @@ def wav_to_ogg(folder, progress_callback=None):
     if replace_count == 0:
         print("No files were replaced.")
     else:
-        print("Reduced size by ", round((1 - new_size / old_size) * 100, 2), "%")
+        if old_size > 0:
+            print("Reduced size by ", round((1 - new_size / old_size) * 100, 2), "%")
         print("Reduced size by ", round((old_size - new_size) / 1000000, 2), "mbs")
     print("="*60)
+    return old_size - new_size, replace_count

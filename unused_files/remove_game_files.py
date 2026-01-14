@@ -99,3 +99,5 @@ def remove_game_files(folder, gamefolder, remove=True, remove_different_content=
     else:
         print(f"Freed up {round(removed_size / 1000000, 2)} MB of space")
     print("="*60)
+    return removed_size, removed_count
+
