@@ -37,14 +37,19 @@ def wav_to_ogg(folder, progress_callback=None):
                 print("File", filepath, "contains loops, skipping.")
                 continue
 
-            old_size += os.path.getsize(filepath)
+            # Capture size before conversion attempt
+            file_size = os.path.getsize(filepath)
             sound = pydub.AudioSegment.from_wav(filepath)
 
             # Use splitext for safe extension replacement (handles uppercase .WAV)
             base, _ = os.path.splitext(filepath)
             new_filepath = base + ".ogg"
             sound.export(new_filepath, format="ogg")
-            new_size += os.path.getsize(new_filepath)
+            converted_size = os.path.getsize(new_filepath)
+
+            # Only update totals after successful conversion
+            old_size += file_size
+            new_size += converted_size
 
             file_name = os.path.basename(filepath)
             file_base, _ = os.path.splitext(file_name)
