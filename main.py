@@ -365,12 +365,12 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def on_progress_update(self, current: int, total: int):
         """Update progress bar with current/total values"""
+        if len(self.active_tasks) > 1:
+            self.progress.setVisible(False)
+            return
         if total > 0:
             self.progress.setRange(0, total)
             self.progress.setValue(current)
-        else:
-            # If total is 0, use indeterminate mode
-            self.progress.setRange(0, 0)
 
     def on_task_finished(self, msg: str, task_id: str = None):
         self.log_append(msg + "\n")
