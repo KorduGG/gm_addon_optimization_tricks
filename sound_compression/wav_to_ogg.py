@@ -32,10 +32,7 @@ def wav_to_ogg(folder, progress_callback=None):
                     progress_callback(processed, total_wavs)
                 
                 wav_info = WavInfoReader(filepath)
-                if wav_info.cues == None:
-                    continue
-
-                if len(wav_info.cues.cues) > 0:
+                if wav_info.cues != None and len(wav_info.cues.cues) > 0:
                     print("File", filepath, "contains cues skipping.")
                     continue
 
