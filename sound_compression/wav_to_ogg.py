@@ -27,28 +27,34 @@ def wav_to_ogg(folder, progress_callback=None):
         if progress_callback:
             progress_callback(idx + 1, total_wavs)
         
-        wav_info = WavInfoReader(filepath)
-        if wav_info.cues is not None and len(wav_info.cues.cues) > 0:
-            print("File", filepath, "contains cues, skipping.")
-            continue
+        try:
+            wav_info = WavInfoReader(filepath)
+            if wav_info.cues is not None and len(wav_info.cues.cues) > 0:
+                print("File", filepath, "contains cues, skipping.")
+                continue
 
-        if wav_info.smpl is not None and len(wav_info.smpl.sample_loops) > 0:
-            print("File", filepath, "contains loops, skipping.")
-            continue
+            if wav_info.smpl is not None and len(wav_info.smpl.sample_loops) > 0:
+                print("File", filepath, "contains loops, skipping.")
+                continue
 
-        old_size += os.path.getsize(filepath)
-        sound = pydub.AudioSegment.from_wav(filepath)
+            old_size += os.path.getsize(filepath)
+            sound = pydub.AudioSegment.from_wav(filepath)
 
-        new_filepath = filepath.replace(".wav", ".ogg")
-        sound.export(new_filepath, format="ogg")
-        new_size += os.path.getsize(new_filepath)
+            # Use splitext for safe extension replacement (handles uppercase .WAV)
+            base, _ = os.path.splitext(filepath)
+            new_filepath = base + ".ogg"
+            sound.export(new_filepath, format="ogg")
+            new_size += os.path.getsize(new_filepath)
 
-        file_name = os.path.basename(filepath)
-        replace_count += 1
-        replaced_files[file_name] = file_name.replace(".wav", ".ogg")
-        os.remove(filepath)
+            file_name = os.path.basename(filepath)
+            file_base, _ = os.path.splitext(file_name)
+            replace_count += 1
+            replaced_files[file_name] = file_base + ".ogg"
+            os.remove(filepath)
 
-        print("Converted", filepath, "to ogg successfully.")
+            print("Converted", filepath, "to ogg successfully.")
+        except Exception as e:
+            print(f"Error converting {filepath}: {e}")
 
     # Optimized reference replacement: O(N+M) instead of O(N*M)
     if replaced_files:

@@ -36,19 +36,26 @@ def wav_to_mp3(folder, progress_callback=None):
             print("File", filepath, "contains loops, skipping.")
             continue
 
-        old_size += os.path.getsize(filepath)
-        sound = pydub.AudioSegment.from_wav(filepath)
 
-        new_filepath = filepath.replace(".wav", ".mp3")
-        sound.export(new_filepath, format="mp3")
-        new_size += os.path.getsize(new_filepath)
+        try:
+            old_size += os.path.getsize(filepath)
+            sound = pydub.AudioSegment.from_wav(filepath)
 
-        file_name = os.path.basename(filepath)
-        replace_count += 1
-        replaced_files[file_name] = file_name.replace(".wav", ".mp3")
-        os.remove(filepath)
+            # Use splitext for safe extension replacement (handles uppercase .WAV)
+            base, _ = os.path.splitext(filepath)
+            new_filepath = base + ".mp3"
+            sound.export(new_filepath, format="mp3")
+            new_size += os.path.getsize(new_filepath)
 
-        print("Converted", filepath, "to mp3 successfully.")
+            file_name = os.path.basename(filepath)
+            file_base, _ = os.path.splitext(file_name)
+            replace_count += 1
+            replaced_files[file_name] = file_base + ".mp3"
+            os.remove(filepath)
+
+            print("Converted", filepath, "to mp3 successfully.")
+        except Exception as e:
+            print(f"Error converting {filepath}: {e}")
 
     # Optimized reference replacement: O(N+M) instead of O(N*M)
     if replaced_files:

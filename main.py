@@ -580,7 +580,8 @@ class MainWindow(QtWidgets.QMainWindow):
             QtWidgets.QMessageBox.warning(self, "Invalid destination", "Please select a destination folder.")
             return
         os.makedirs(dest_folder, exist_ok=True)
-        self.start_task("Find/copy content used by map", find_map_content, folder, gamefolder, dest_folder, map_file)
+        self.start_task("Find/copy content used by map", find_map_content, folder, gamefolder, dest_folder, map_file,
+                         task_id="find_map_content")
 
     def on_resave_vtf(self):
         folder = self.ensure_folder()
@@ -605,7 +606,7 @@ class MainWindow(QtWidgets.QMainWindow):
             print(f"Resaved {count} VTF files.")
             return 0, count
 
-        self.start_task("Resave VTF files", task)
+        self.start_task("Resave VTF files", task, task_id="resave_vtf")
 
     def on_resize_single_color(self):
         folder = self.ensure_folder()

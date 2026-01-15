@@ -37,13 +37,17 @@ def mp3_to_ogg(folder, progress_callback=None):
             print(f"Skipping MP3 file due to unexpected error: {filepath} - Error: {e}")
             continue
 
-        new_filepath = filepath.replace(".mp3", ".ogg")
+
+        # Use splitext for safe extension replacement (handles uppercase .MP3)
+        base, _ = os.path.splitext(filepath)
+        new_filepath = base + ".ogg"
         sound.export(new_filepath, format="ogg")
         new_size += os.path.getsize(new_filepath)
 
         file_name = os.path.basename(filepath)
+        file_base, _ = os.path.splitext(file_name)
         replace_count += 1
-        replaced_files[file_name] = file_name.replace(".mp3", ".ogg")
+        replaced_files[file_name] = file_base + ".ogg"
         os.remove(filepath)
 
         print("Converted", filepath, "to ogg successfully.")
